@@ -122,7 +122,7 @@
       if (!items.length) items = [];
     }
     loadingEl.classList.add('hidden');
-    initMosaic();
+    initCarousel();
     renderGrid();
     handleHash();
     trackEvent('page_view');
@@ -451,7 +451,7 @@
     aboutView.style.display = 'none';
     notfoundView.style.display = 'none';
     gridView.style.display = '';
-    if (mosaicCells.length) startMosaic();
+    startCarouselAuto();
   }
 
   function showAbout() {
@@ -642,126 +642,79 @@
     return d.innerHTML;
   }
 
-  // --- Mosaic ---
+  // --- Carousel ---
 
-  const mosaic = document.getElementById('mosaic');
-  const MOSAIC_CELLS = 18;
-  const MOSAIC_INTERVAL = 1000;
-  const MOSAIC_FLIP_MS = 700;
-  const DESKTOP_FLIPS = 4;   // 4-5
-  const MOBILE_FLIPS = 2;    // 2-3
+  const carouselTrack = document.getElementById('carousel-track');
+  const carouselEl = document.getElementById('carousel');
+  const prevBtn = document.getElementById('carousel-prev');
+  const nextBtn = document.getElementById('carousel-next');
+  let carouselPos = 0;
+  let carouselSlideCount = 0;
+  let carouselAutoTimer = null;
 
-  let mosaicCells = [];
-  let mosaicTimer = null;
-  let mosaicItems = [];
-  let mosaicDeck = [];   // items waiting to be shown (never overlaps with cells)
-  let mosaicGen = 0;     // generation counter — invalidates stale animation callbacks
-
-  function isMobile() { return window.innerWidth <= 559; }
-  function isTablet() { return window.innerWidth > 559 && window.innerWidth <= 959; }
-  function visibleCells() { return isMobile() ? 6 : isTablet() ? 12 : 18; }
-  function flipBase() { return isMobile() ? MOBILE_FLIPS : DESKTOP_FLIPS; }
-
-  function initMosaic() {
-    mosaicItems = items.filter(i => !i.isSold && (i.heroImage || (i.images && i.images.length > 0)));
-    if (mosaicItems.length < 4) { mosaic.style.display = 'none'; return; }
-
-    mosaic.style.display = '';
-    mosaic.innerHTML = '';
-    mosaicCells = [];
-    mosaicDeck = [];
-    mosaicGen++;
-
-    const shuffled = [...mosaicItems].sort(() => Math.random() - 0.5);
-    const cellCount = Math.min(MOSAIC_CELLS, shuffled.length);
-
-    for (let i = 0; i < cellCount; i++) {
-      const item = shuffled[i];
-      const cell = document.createElement('a');
-      cell.className = 'mosaic-cell';
-      cell.href = '#' + item.id;
-      cell.innerHTML = `
-        <div class="mosaic-inner">
-          <div class="mosaic-face mosaic-front">
-            <img src="${thumbUrl(item.heroImage || item.images[0])}" alt="" loading="lazy">
-          </div>
-          <div class="mosaic-face mosaic-back">
-            <img src="${thumbUrl(item.heroImage || item.images[0])}" alt="" loading="lazy">
-          </div>
-        </div>
-      `;
-      mosaic.appendChild(cell);
-      mosaicCells.push({ el: cell, flipped: false, currentItem: item, animating: false });
-    }
-    for (let i = cellCount; i < shuffled.length; i++) {
-      mosaicDeck.push(shuffled[i]);
-    }
-
-    startMosaic();
+  function slidesPerView() {
+    if (window.innerWidth <= 559) return 2;
+    if (window.innerWidth <= 959) return 3;
+    return 4;
   }
 
-  function startMosaic() {
-    if (mosaicTimer) clearInterval(mosaicTimer);
-    mosaicTimer = setInterval(flipMosaicTiles, MOSAIC_INTERVAL);
-  }
+  function initCarousel() {
+    const available = items.filter(i => !i.isSold && (i.heroImage || (i.images && i.images.length > 0)));
+    if (available.length < 2) { carouselEl.style.display = 'none'; return; }
 
-  function stopMosaic() {
-    if (mosaicTimer) { clearInterval(mosaicTimer); mosaicTimer = null; }
-  }
+    carouselEl.style.display = '';
+    carouselTrack.innerHTML = '';
+    carouselPos = 0;
 
-  function flipMosaicTiles() {
-    if (mosaicItems.length < 2) return;
+    const shuffled = [...available].sort(() => Math.random() - 0.5);
+    carouselSlideCount = shuffled.length;
 
-    const vis = visibleCells();
-    const available = mosaicCells.filter((c, i) => i < vis && !c.animating);
-    if (available.length < 2) return;
-
-    const base = flipBase();
-    // Never flip more cells than we have deck items for
-    const count = Math.min(
-      Math.random() < 0.5 ? base : base + 1,
-      available.length,
-      mosaicDeck.length
-    );
-    if (count === 0) return;
-
-    const toFlip = [...available].sort(() => Math.random() - 0.5).slice(0, count);
-    const gen = mosaicGen;
-
-    toFlip.forEach(cell => {
-      // Pull next item from deck (deck never contains on-screen items)
-      const newItem = mosaicDeck.shift();
-      if (!newItem) return;
-
-      const oldItem = cell.currentItem;
-
-      // Load new image into hidden face
-      const inner = cell.el.querySelector('.mosaic-inner');
-      const hiddenImg = cell.flipped
-        ? inner.querySelector('.mosaic-front img')
-        : inner.querySelector('.mosaic-back img');
-      hiddenImg.src = thumbUrl(newItem.heroImage || newItem.images[0]);
-
-      // Flip
-      cell.animating = true;
-      cell.flipped = !cell.flipped;
-      cell.currentItem = newItem;
-      inner.classList.toggle('flipped');
-
-      // Return old item to deck AFTER animation completes (not before)
-      setTimeout(() => {
-        if (gen !== mosaicGen) return;  // mosaic was re-initialized, discard
-        cell.el.href = '#' + newItem.id;
-        cell.animating = false;
-        mosaicDeck.push(oldItem);
-      }, MOSAIC_FLIP_MS + 50);
+    shuffled.forEach(item => {
+      const slide = document.createElement('a');
+      slide.className = 'carousel-slide';
+      slide.href = '#' + item.id;
+      slide.innerHTML = `<img src="${thumbUrl(item.heroImage || item.images[0])}" alt="${esc(item.title)}" loading="lazy">`;
+      carouselTrack.appendChild(slide);
     });
+
+    updateCarousel();
+    startCarouselAuto();
   }
 
-  // Pause mosaic when on detail view or tab hidden
+  function updateCarousel() {
+    const perView = slidesPerView();
+    const maxPos = Math.max(0, carouselSlideCount - perView);
+    if (carouselPos > maxPos) carouselPos = maxPos;
+    if (carouselPos < 0) carouselPos = 0;
+    const pct = carouselPos * (100 / carouselSlideCount);
+    carouselTrack.style.transform = `translateX(-${pct}%)`;
+    prevBtn.style.display = carouselPos <= 0 ? 'none' : '';
+    nextBtn.style.display = carouselPos >= maxPos ? 'none' : '';
+  }
+
+  prevBtn.addEventListener('click', () => { carouselPos--; updateCarousel(); resetCarouselAuto(); });
+  nextBtn.addEventListener('click', () => { carouselPos++; updateCarousel(); resetCarouselAuto(); });
+
+  function startCarouselAuto() {
+    stopCarouselAuto();
+    carouselAutoTimer = setInterval(() => {
+      const maxPos = Math.max(0, carouselSlideCount - slidesPerView());
+      carouselPos = carouselPos >= maxPos ? 0 : carouselPos + 1;
+      updateCarousel();
+    }, 4000);
+  }
+
+  function stopCarouselAuto() {
+    if (carouselAutoTimer) { clearInterval(carouselAutoTimer); carouselAutoTimer = null; }
+  }
+
+  function resetCarouselAuto() { stopCarouselAuto(); startCarouselAuto(); }
+
+  window.addEventListener('resize', () => updateCarousel());
+
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) stopMosaic();
-    else if (gridView.style.display !== 'none') startMosaic();
+    if (document.hidden) stopCarouselAuto();
+    else if (gridView.style.display !== 'none') startCarouselAuto();
   });
 
   // --- Email capture bar ---
