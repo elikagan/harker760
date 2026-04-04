@@ -1,0 +1,1 @@
+ALTER TABLE sales ADD COLUMN IF NOT EXISTS posted_by text;

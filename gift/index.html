@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gift Certificate - Harker760</title>
+  <meta name="description" content="Purchase a gift certificate for Harker760 — Uncommon Objects, Art and Design in Pasadena.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='80' font-family='sans-serif' font-weight='800'>H</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <meta property="og:title" content="Gift Certificate - Harker760">
+  <meta property="og:description" content="Give the gift of uncommon objects, art and design.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://harker760.com/gift/">
+  <meta property="og:image" content="https://harker760.com/Asset%201.png">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --black: #1a1a1a;
+      --gray: #888;
+      --border: #bbb;
+      --bg: #fff;
+      --font: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: var(--font);
+      color: var(--black);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    .container {
+      width: 100%;
+      max-width: 420px;
+      padding: 0 24px;
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 15px;
+      color: var(--gray);
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--gray);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    input {
+      width: 100%;
+      font-family: var(--font);
+      font-size: 16px;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+
+    input:focus {
+      border-color: var(--black);
+    }
+
+    input::placeholder {
+      color: #bbb;
+    }
+
+    .amount-wrap {
+      position: relative;
+    }
+
+    .amount-wrap::before {
+      content: '$';
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+      color: var(--gray);
+      pointer-events: none;
+    }
+
+    .amount-wrap input {
+      padding-left: 28px;
+    }
+
+    .btn {
+      width: 100%;
+      font-family: var(--font);
+      font-size: 15px;
+      font-weight: 500;
+      padding: 14px;
+      background: var(--black);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      margin-top: 8px;
+    }
+
+    .btn:hover { opacity: 0.85; }
+    .btn:disabled { opacity: 0.4; cursor: default; }
+
+    .back {
+      display: inline-block;
+      font-size: 14px;
+      color: var(--gray);
+      margin-top: 24px;
+      padding-bottom: 40px;
+    }
+
+    .back:hover { color: var(--black); }
+
+    /* Confirmation state */
+    .confirmation { display: none; text-align: center; }
+    .confirmation.visible { display: block; }
+    .form-state.hidden { display: none; }
+
+    .conf-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .conf-title {
+      font-size: 22px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .conf-subtitle {
+      font-size: 15px;
+      color: var(--gray);
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+
+    .gift-code {
+      display: inline-block;
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      padding: 16px 28px;
+      border: 2px solid var(--black);
+      border-radius: 12px;
+      margin-bottom: 16px;
+      user-select: all;
+      cursor: pointer;
+    }
+
+    .copy-hint {
+      font-size: 13px;
+      color: var(--gray);
+      margin-bottom: 28px;
+    }
+
+    .conf-note {
+      font-size: 14px;
+      color: var(--gray);
+      line-height: 1.6;
+      max-width: 340px;
+      margin: 0 auto 32px;
+    }
+
+    .share-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .share-btn {
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 500;
+      padding: 10px 20px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      color: var(--black);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .share-btn:hover {
+      border-color: var(--black);
+    }
+  </style>
+</head>
+<body>
+  <a href="/" class="logo" style="font-family:var(--font);font-size:28px;font-weight:800;letter-spacing:-0.02em;text-transform:uppercase;display:block;text-align:center;margin:40px auto 48px;color:var(--black);">HARKER760</a>
+
+  <div class="container">
+    <!-- Purchase form -->
+    <div class="form-state" id="form-state">
+      <h1>Gift Certificate</h1>
+      <p class="subtitle">Give the gift of something unexpected. Harker760 gift certificates can be used online or in-store at our Pasadena shop — and they never expire.</p>
+
+      <div class="form-group">
+        <label for="gc-amount">Amount</label>
+        <div class="amount-wrap">
+          <input type="number" id="gc-amount" placeholder="50" min="1" max="10000" step="1" inputmode="numeric" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="gc-to">To <span style="font-weight:400;text-transform:none">(optional)</span></label>
+        <input type="text" id="gc-to" placeholder="Recipient name" maxlength="100">
+      </div>
+
+      <div class="form-group">
+        <label for="gc-from">From <span style="font-weight:400;text-transform:none">(optional)</span></label>
+        <input type="text" id="gc-from" placeholder="Your name" maxlength="100">
+      </div>
+
+      <button class="btn" id="gc-buy">Purchase Gift Certificate</button>
+      <a href="/" class="back">&larr; Back to shop</a>
+    </div>
+
+    <!-- Confirmation -->
+    <div class="confirmation" id="conf-state">
+      <div class="conf-title">Gift Certificate Purchased</div>
+      <p class="conf-subtitle">Give this code to the recipient to use at checkout.</p>
+      <div class="gift-code" id="conf-code"></div>
+      <p class="copy-hint" id="copy-hint">Tap to copy</p>
+      <div class="share-buttons">
+        <a class="share-btn" id="share-email">Email</a>
+        <a class="share-btn" id="share-text">Text</a>
+        <button class="share-btn" id="share-native" style="display:none">Share</button>
+      </div>
+      <p class="conf-note">
+        This code can be used at checkout on harker760.com or in-store at Harker760 in Pasadena. It does not expire.
+      </p>
+      <p class="conf-note" style="font-size:13px;margin-top:-16px">
+        A confirmation email with this code has been sent to your payment email.
+      </p>
+      <a href="/" class="btn" style="display:inline-block;text-align:center;text-decoration:none">Continue Shopping</a>
+    </div>
+  </div>
+
+  <script>
+  (function() {
+    const CHECKOUT_URL = 'https://h760-checkout.harker760.workers.dev/gift-checkout';
+    const SUPA_URL = ''; // TODO: set up Harker760 Supabase
+    const SUPA_ANON = ''; // TODO: set up Harker760 Supabase
+
+    function getSessionId() {
+      let sid = sessionStorage.getItem('h760_sid');
+      if (!sid) { sid = Math.random().toString(36).slice(2) + Date.now().toString(36); sessionStorage.setItem('h760_sid', sid); }
+      return sid;
+    }
+
+    function trackEvent(event) {
+      if (/bot|crawl|spider/i.test(navigator.userAgent)) return;
+      fetch(`${SUPA_URL}/rest/v1/events`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': SUPA_ANON, 'Authorization': 'Bearer ' + SUPA_ANON, 'Prefer': 'return=minimal' },
+        body: JSON.stringify({
+          event,
+          session_id: getSessionId(),
+          referrer: document.referrer || null,
+          ua_mobile: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent),
+          path: '/gift/'
+        }),
+        keepalive: true
+      }).catch(() => {});
+    }
+
+    trackEvent('page_view');
+
+    // Check for confirmation redirect
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('purchased') === '1' && params.get('code')) {
+      document.getElementById('form-state').classList.add('hidden');
+      const conf = document.getElementById('conf-state');
+      conf.classList.add('visible');
+      const code = params.get('code');
+      const codeEl = document.getElementById('conf-code');
+      codeEl.textContent = code;
+
+      codeEl.addEventListener('click', () => {
+        navigator.clipboard.writeText(code).then(() => {
+          document.getElementById('copy-hint').textContent = 'Copied!';
+          setTimeout(() => { document.getElementById('copy-hint').textContent = 'Tap to copy'; }, 2000);
+        });
+      });
+
+      const shareText = `Here's a gift certificate for Harker760!\n\nCode: ${code}\n\nUse it at harker760.com or in-store in Pasadena. It doesn't expire.`;
+      const shareSubject = 'Gift Certificate for Harker760';
+
+      // Email button
+      document.getElementById('share-email').href =
+        `mailto:?subject=${encodeURIComponent(shareSubject)}&body=${encodeURIComponent(shareText)}`;
+
+      // Text/SMS button
+      document.getElementById('share-text').href =
+        `sms:?&body=${encodeURIComponent(shareText)}`;
+
+      // Native share (mobile)
+      if (navigator.share) {
+        const nativeBtn = document.getElementById('share-native');
+        nativeBtn.style.display = '';
+        nativeBtn.addEventListener('click', () => {
+          navigator.share({ title: shareSubject, text: shareText }).catch(() => {});
+        });
+      }
+
+      return;
+    }
+
+    // Purchase flow
+    const buyBtn = document.getElementById('gc-buy');
+    buyBtn.addEventListener('click', async () => {
+      const amount = parseFloat(document.getElementById('gc-amount').value);
+
+      if (!amount || amount <= 0 || amount > 10000) {
+        document.getElementById('gc-amount').focus();
+        return;
+      }
+
+      buyBtn.disabled = true;
+      buyBtn.textContent = 'Processing...';
+      trackEvent('gift_purchase');
+
+      try {
+        const body = { amount };
+        const to = document.getElementById('gc-to').value.trim();
+        const from = document.getElementById('gc-from').value.trim();
+        if (to) body.recipientName = to;
+        if (from) body.purchaserName = from;
+
+        const res = await fetch(CHECKOUT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        const data = await res.json();
+
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          alert(data.error || 'Unable to process. Please try again.');
+          buyBtn.textContent = 'Purchase Gift Certificate';
+          buyBtn.disabled = false;
+        }
+      } catch {
+        alert('Unable to process. Please try again.');
+        buyBtn.textContent = 'Purchase Gift Certificate';
+        buyBtn.disabled = false;
+      }
+    });
+  })();
+  </script>
+</body>
+</html>

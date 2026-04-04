@@ -1,0 +1,11 @@
+{
+  "name": "Harker760 Admin",
+  "short_name": "H760 Admin",
+  "start_url": "/admin/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

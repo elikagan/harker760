@@ -1,0 +1,4 @@
+name = "h760-checkout"
+main = "square-checkout.js"
+compatibility_date = "2024-01-01"
+account_id = "01df4197c916f6f98962667e24d696ec"
