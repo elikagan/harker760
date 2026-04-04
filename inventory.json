@@ -14,11 +14,11 @@
     "isHold": false,
     "isSold": false,
     "images": [
+      "images/products/000001/deep_green_cylinder_vase_3.jpg",
       "images/products/000001/deep_green_cylinder_vase_1.jpg",
-      "images/products/000001/deep_green_cylinder_vase_2.jpg",
-      "images/products/000001/deep_green_cylinder_vase_3.jpg"
+      "images/products/000001/deep_green_cylinder_vase_2.jpg"
     ],
-    "heroImage": "images/products/000001/deep_green_cylinder_vase_1.jpg",
+    "heroImage": "images/products/000001/deep_green_cylinder_vase_3.jpg",
     "order": 0,
     "createdAt": "2026-04-04T23:45:57.285Z"
   }
