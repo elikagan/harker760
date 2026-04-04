@@ -2,7 +2,7 @@
   'use strict';
 
   // --- Config ---
-  const APP_VERSION = 'v57';
+  const APP_VERSION = 'v58';
   const REPO = 'harker760';
   const OWNER = 'elikagan';
   const BRANCH = 'main';
@@ -653,6 +653,7 @@
       document.getElementById('field-new').checked = !!item.isNew;
       document.getElementById('field-hold').checked = !!item.isHold;
       document.getElementById('field-sold').checked = !!item.isSold;
+      document.getElementById('field-carousel').checked = !!item.inCarousel;
 
       // Load existing images — hero is first, so put it first
       if (item.images) {
@@ -679,6 +680,7 @@
       document.getElementById('field-new').checked = true;
       document.getElementById('field-hold').checked = false;
       document.getElementById('field-sold').checked = false;
+      document.getElementById('field-carousel').checked = false;
     }
 
     renderPhotos();
@@ -1349,6 +1351,7 @@
     const isNew = document.getElementById('field-new').checked;
     const isHold = document.getElementById('field-hold').checked;
     const isSold = document.getElementById('field-sold').checked;
+    const inCarousel = document.getElementById('field-carousel').checked;
 
     if (!title) { toast('Title is required'); saveInProgress = false; return; }
     if (!category) { toast('Category is required'); saveInProgress = false; return; }
@@ -1415,6 +1418,7 @@
         isNew: isSold ? false : isNew,
         isHold: isSold ? false : isHold,
         isSold,
+        inCarousel: isSold ? false : inCarousel,
         images: uploadedImages,
         heroImage: uploadedImages[0] || '',
         order: editingId ? (prevItem?.order ?? 0) : 0,

@@ -1,4 +1,4 @@
-const CACHE = 'h760-admin-v57';
+const CACHE = 'h760-admin-v58';
 const SHELL = [
   '/admin/',
   '/admin/style.css',

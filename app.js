@@ -659,7 +659,7 @@
   }
 
   function initCarousel() {
-    const available = items.filter(i => !i.isSold && (i.heroImage || (i.images && i.images.length > 0)));
+    const available = items.filter(i => i.inCarousel && !i.isSold && (i.heroImage || (i.images && i.images.length > 0)));
     if (available.length < 2) { carouselEl.style.display = 'none'; return; }
 
     carouselEl.style.display = '';
