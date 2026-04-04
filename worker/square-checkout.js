@@ -938,7 +938,7 @@ async function handleImageProxy(request, url) {
   if (response) return response;
 
   // Fetch from GitHub Pages origin
-  const originUrl = `https://harker760.com/${imagePath}`;
+  const originUrl = `https://raw.githubusercontent.com/elikagan/harker760/main/${imagePath}`;
   const originResp = await fetch(originUrl);
   if (!originResp.ok) {
     return new Response('Not found', { status: 404 });
