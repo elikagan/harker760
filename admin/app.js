@@ -1111,7 +1111,7 @@
     return null;
   }
 
-  const WORKER_URL = 'https://h760-checkout.harker760.workers.dev';
+  const WORKER_URL = 'https://h760-checkout.objectlesson.workers.dev';
 
   // Gemini lighting enhancement on already-cutout image
   async function geminiEnhanceLighting(dataUrl) {
@@ -2118,7 +2118,7 @@
       // Send email with gift code if email provided
       if (email) {
         try {
-          await fetch('https://h760-checkout.harker760.workers.dev/send-gift-email', {
+          await fetch('https://h760-checkout.objectlesson.workers.dev/send-gift-email', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ code, amount, email, purchaserName: purchaser, recipientName: recipient })

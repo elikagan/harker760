@@ -1,7 +1,7 @@
 (function () {
   const PHONE = '7605868800';
   const EMAIL = 'info@harker760.com';
-  const CHECKOUT_URL = 'https://h760-checkout.harker760.workers.dev/checkout';
+  const CHECKOUT_URL = 'https://h760-checkout.objectlesson.workers.dev/checkout';
 
   // Detect return from Square checkout
   const urlParams = new URLSearchParams(location.search);
@@ -617,7 +617,7 @@
   // --- Helpers ---
 
   // Serve images through Cloudflare CDN (edge-cached, 1-year TTL)
-  const CDN_BASE = 'https://h760-checkout.harker760.workers.dev/img/';
+  const CDN_BASE = 'https://h760-checkout.objectlesson.workers.dev/img/';
   function imgUrl(path) {
     if (!path || path.startsWith('http')) return path;
     return CDN_BASE + path;
