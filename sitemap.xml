@@ -13,15 +13,15 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <image:image>
+      <image:loc>https://raw.githubusercontent.com/elikagan/harker760/main/images/products/000001/deep_green_cylinder_vase_3.jpg</image:loc>
+      <image:title>Deep Green Cylinder Vase</image:title>
+    </image:image>
+    <image:image>
       <image:loc>https://raw.githubusercontent.com/elikagan/harker760/main/images/products/000001/deep_green_cylinder_vase_1.jpg</image:loc>
       <image:title>Deep Green Cylinder Vase</image:title>
     </image:image>
     <image:image>
       <image:loc>https://raw.githubusercontent.com/elikagan/harker760/main/images/products/000001/deep_green_cylinder_vase_2.jpg</image:loc>
-      <image:title>Deep Green Cylinder Vase</image:title>
-    </image:image>
-    <image:image>
-      <image:loc>https://raw.githubusercontent.com/elikagan/harker760/main/images/products/000001/deep_green_cylinder_vase_3.jpg</image:loc>
       <image:title>Deep Green Cylinder Vase</image:title>
     </image:image>
   </url>
