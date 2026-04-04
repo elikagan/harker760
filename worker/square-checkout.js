@@ -333,7 +333,7 @@ async function handleSendGiftEmail(request, env) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        from: 'Harker760 <gift@harker760.com>',
+        from: 'Harker760 <onboarding@resend.dev>',
         to: [email],
         subject: `Your Harker760 Gift Certificate - $${amount}`,
         html: `
@@ -508,7 +508,7 @@ async function handleWebhook(request, env) {
               method: 'POST',
               headers: { 'Authorization': `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
               body: JSON.stringify({
-                from: 'Harker760 <gift@harker760.com>',
+                from: 'Harker760 <onboarding@resend.dev>',
                 to: [buyerEmail],
                 subject: `Your Harker760 Gift Certificate - $${gcAmount}`,
                 html: `

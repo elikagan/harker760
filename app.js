@@ -12,9 +12,8 @@
   }
 
   // --- Analytics (Supabase) ---
-  // TODO: Set up new Supabase project
-  const SUPA_URL = '';
-  const SUPA_ANON = '';
+  const SUPA_URL = 'https://vklgcykwaurxkqiwopqg.supabase.co';
+  const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZrbGdjeWt3YXVyeGtxaXdvcHFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNDE5MjEsImV4cCI6MjA5MDkxNzkyMX0.uisYg-0efD6F_de6ATBzw49kgE1lTT4Di-94tNO265M';
 
   function getSessionId() {
     let sid = sessionStorage.getItem('h760_sid');
