@@ -38,6 +38,7 @@
     "isNew": true,
     "isHold": false,
     "isSold": false,
+    "inCarousel": true,
     "images": [
       "images/products/000001/deep_green_cylinder_vase_3.jpg",
       "images/products/000001/deep_green_cylinder_vase_1.jpg",
