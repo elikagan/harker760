@@ -1,5 +1,30 @@
 [
   {
+    "id": "000002",
+    "title": "Studio Ceramic",
+    "description": "Small studio ceramic pot with a variegated brown and beige glaze.",
+    "price": 120,
+    "size": "",
+    "category": "ceramic",
+    "maker": "",
+    "condition": "",
+    "dealerCode": "65CH",
+    "postedBy": "",
+    "isNew": true,
+    "isHold": false,
+    "isSold": false,
+    "inCarousel": false,
+    "images": [
+      "images/products/000002/studio_ceramic_1.jpg",
+      "images/products/000002/studio_ceramic_2.jpg",
+      "images/products/000002/studio_ceramic_3.jpg",
+      "images/products/000002/studio_ceramic_4.jpg"
+    ],
+    "heroImage": "images/products/000002/studio_ceramic_1.jpg",
+    "order": 0,
+    "createdAt": "2026-04-05T00:01:02.103Z"
+  },
+  {
     "id": "000001",
     "title": "Deep Green Cylinder Vase",
     "description": "Dark brown cylindrical ceramic vase with a textured incised line detail.",
@@ -19,7 +44,7 @@
       "images/products/000001/deep_green_cylinder_vase_2.jpg"
     ],
     "heroImage": "images/products/000001/deep_green_cylinder_vase_3.jpg",
-    "order": 0,
+    "order": 1,
     "createdAt": "2026-04-04T23:45:57.285Z"
   }
 ]
