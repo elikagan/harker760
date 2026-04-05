@@ -13,7 +13,7 @@
     "isNew": true,
     "isHold": false,
     "isSold": false,
-    "inCarousel": false,
+    "inCarousel": true,
     "images": [
       "images/products/000002/studio_ceramic_1.jpg",
       "images/products/000002/studio_ceramic_2.jpg",
