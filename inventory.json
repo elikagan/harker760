@@ -6,7 +6,7 @@
     "price": 70,
     "size": "",
     "category": "ceramic",
-    "maker": "",
+    "maker": "OI",
     "condition": "",
     "dealerCode": "65CH",
     "postedBy": "",
@@ -15,10 +15,10 @@
     "isSold": false,
     "inCarousel": true,
     "images": [
-      "images/products/000005/small_grey_vase_1.jpg",
+      "images/products/000005/small_grey_vase_2.jpg",
       "images/products/000005/small_grey_vase_2.jpg"
     ],
-    "heroImage": "images/products/000005/small_grey_vase_1.jpg",
+    "heroImage": "images/products/000005/small_grey_vase_2.jpg",
     "order": 0,
     "createdAt": "2026-04-07T21:05:52.843Z"
   },
