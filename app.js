@@ -686,8 +686,8 @@
     carouselOffset = 0;
     carouselRunning = true;
     carouselLastTime = 0;
-    // ~150px/sec — fast continuous scroll
-    carouselSpeed = 0.15;
+    // ~90px/sec continuous scroll
+    carouselSpeed = 0.09;
     requestAnimationFrame(tickCarousel);
   }
 
@@ -722,7 +722,11 @@
     if (Math.abs(x - swipeStartX) > 10) swiped = true;
   }, { passive: true });
 
-  carouselEl.addEventListener('touchend', () => {
+  carouselEl.addEventListener('touchend', e => {
+    const totalDx = swipeStartX - e.changedTouches[0].clientX;
+    if (Math.abs(totalDx) > 20) {
+      carouselSpeed = Math.abs(carouselSpeed) * (totalDx > 0 ? 1 : -1);
+    }
     carouselDragging = false;
     carouselLastTime = 0;
   }, { passive: true });
