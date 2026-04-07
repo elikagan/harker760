@@ -1,5 +1,28 @@
 [
   {
+    "id": "000005",
+    "title": "Small Grey Vase",
+    "description": "Small grey ceramic bud vase with a matte glaze and handmade aesthetic.",
+    "price": 70,
+    "size": "",
+    "category": "ceramic",
+    "maker": "",
+    "condition": "",
+    "dealerCode": "65CH",
+    "postedBy": "",
+    "isNew": true,
+    "isHold": false,
+    "isSold": false,
+    "inCarousel": true,
+    "images": [
+      "images/products/000005/small_grey_vase_1.jpg",
+      "images/products/000005/small_grey_vase_2.jpg"
+    ],
+    "heroImage": "images/products/000005/small_grey_vase_1.jpg",
+    "order": 0,
+    "createdAt": "2026-04-07T21:05:52.843Z"
+  },
+  {
     "id": "000004",
     "title": "Small Primitive Studio Bowl",
     "description": "Dark blue and brown glazed ceramic studio pottery bowl.",
@@ -19,7 +42,7 @@
       "images/products/000004/small_primitive_studio_bowl_2.jpg"
     ],
     "heroImage": "images/products/000004/small_primitive_studio_bowl_1.jpg",
-    "order": 0,
+    "order": 1,
     "createdAt": "2026-04-07T19:06:29.852Z"
   },
   {
@@ -44,7 +67,7 @@
       "images/products/000003/brown_lid_ceramic_4.jpg"
     ],
     "heroImage": "images/products/000003/brown_lid_ceramic_1.jpg",
-    "order": 1,
+    "order": 2,
     "createdAt": "2026-04-07T18:46:57.635Z"
   },
   {
@@ -69,7 +92,7 @@
       "images/products/000002/studio_ceramic_4.jpg"
     ],
     "heroImage": "images/products/000002/studio_ceramic_1.jpg",
-    "order": 2,
+    "order": 3,
     "createdAt": "2026-04-05T00:01:02.103Z"
   },
   {
@@ -93,7 +116,7 @@
       "images/products/000001/deep_green_cylinder_vase_2.jpg"
     ],
     "heroImage": "images/products/000001/deep_green_cylinder_vase_3.jpg",
-    "order": 3,
+    "order": 4,
     "createdAt": "2026-04-04T23:45:57.285Z"
   }
 ]
