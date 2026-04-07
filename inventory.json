@@ -1,33 +1,10 @@
 [
   {
-    "id": "000008",
-    "title": "Small Grey Vase",
-    "description": "Speckled blue-grey stoneware vase with round form and central opening.",
-    "price": 70,
-    "size": "",
-    "category": "ceramic",
-    "maker": "",
-    "condition": "",
-    "dealerCode": "65CH",
-    "postedBy": "",
-    "isNew": true,
-    "isHold": false,
-    "isSold": false,
-    "inCarousel": true,
-    "images": [
-      "images/products/000008/small_grey_vase_1.jpg",
-      "images/products/000008/small_grey_vase_2.jpg"
-    ],
-    "heroImage": "images/products/000008/small_grey_vase_1.jpg",
-    "order": 0,
-    "createdAt": "2026-04-07T21:36:24.800Z"
-  },
-  {
     "id": "000007",
     "title": "Wood Box",
     "description": "Jewelry box with drawers",
     "price": 120,
-    "size": "7âW x 5âH",
+    "size": "7Ã¢ÂÂW x 5Ã¢ÂÂH",
     "category": "object",
     "maker": "",
     "condition": "Good",
@@ -50,7 +27,7 @@
     "title": "Brutalist Ceramic Sleeve",
     "description": "Tall blue and brown textured abstract ceramic sculpture with organic shapes and raw finish.",
     "price": 120,
-    "size": "14Ã¢ÂÂH",
+    "size": "14ÃÂ¢ÃÂÃÂH",
     "category": "sculpture",
     "maker": "",
     "condition": "",
