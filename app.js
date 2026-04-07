@@ -672,45 +672,80 @@
   }
 
   let carouselCount = 0;
+  let carouselOffset = 0;
+  let carouselRunning = false;
+  let carouselLastTime = 0;
+  let carouselSpeed = 0; // px per ms
 
   function startCarouselLoop(count) {
     carouselCount = count;
-    const duration = count * 1200; // ~70% faster (was 4000ms/slide)
-    carouselAnim = carouselTrack.animate(
-      [{ transform: 'translateX(0)' }, { transform: 'translateX(-50%)' }],
-      { duration, iterations: Infinity, easing: 'linear' }
-    );
+    carouselOffset = 0;
+    carouselRunning = true;
+    carouselLastTime = 0;
+    // Speed: traverse one set of slides in count * 1200ms
+    const totalWidth = carouselTrack.scrollWidth / 2;
+    carouselSpeed = totalWidth / (count * 1200);
+    requestAnimationFrame(tickCarousel);
+  }
+
+  function tickCarousel(ts) {
+    if (!carouselRunning) return;
+    if (!carouselLastTime) carouselLastTime = ts;
+    const dt = ts - carouselLastTime;
+    carouselLastTime = ts;
+    carouselOffset += carouselSpeed * dt;
+    const halfWidth = carouselTrack.scrollWidth / 2;
+    if (halfWidth > 0) carouselOffset = carouselOffset % halfWidth;
+    carouselTrack.style.transform = `translateX(-${carouselOffset}px)`;
+    requestAnimationFrame(tickCarousel);
   }
 
   // Touch swipe support
   let swipeStartX = 0;
   let swipeStartTime = 0;
+  let swiped = false;
   carouselEl.addEventListener('touchstart', e => {
     swipeStartX = e.touches[0].clientX;
     swipeStartTime = Date.now();
-    if (carouselAnim) carouselAnim.pause();
+    swiped = false;
+    carouselRunning = false;
+  }, { passive: true });
+
+  carouselEl.addEventListener('touchmove', e => {
+    const dx = e.touches[0].clientX - swipeStartX;
+    if (Math.abs(dx) > 10) swiped = true;
   }, { passive: true });
 
   carouselEl.addEventListener('touchend', e => {
     const dx = e.changedTouches[0].clientX - swipeStartX;
     const dt = Date.now() - swipeStartTime;
     if (Math.abs(dx) > 40 && dt < 500) {
-      // Swipe detected — jump forward or backward by nudging the animation time
-      if (carouselAnim && carouselCount > 0) {
-        const jumpPct = 1 / carouselCount;
-        const dur = carouselAnim.effect.getTiming().duration;
-        const cur = carouselAnim.currentTime % dur;
-        const shift = dur * jumpPct;
-        carouselAnim.currentTime = dx < 0 ? cur + shift : Math.max(0, cur - shift);
-      }
+      // Swipe — jump one slide width
+      const slideWidth = carouselTrack.scrollWidth / (carouselCount * 2);
+      carouselOffset += dx < 0 ? slideWidth : -slideWidth;
+      const halfWidth = carouselTrack.scrollWidth / 2;
+      if (halfWidth > 0) carouselOffset = ((carouselOffset % halfWidth) + halfWidth) % halfWidth;
+      carouselTrack.style.transform = `translateX(-${carouselOffset}px)`;
     }
-    if (carouselAnim) carouselAnim.play();
-  }, { passive: true });
+    if (swiped) e.preventDefault();
+    carouselRunning = true;
+    carouselLastTime = 0;
+    requestAnimationFrame(tickCarousel);
+  });
+
+  // Prevent click navigation when swiping
+  carouselEl.addEventListener('click', e => {
+    if (swiped) { e.preventDefault(); swiped = false; }
+  });
 
   document.addEventListener('visibilitychange', () => {
-    if (!carouselAnim) return;
-    if (document.hidden) carouselAnim.pause();
-    else if (gridView.style.display !== 'none') carouselAnim.play();
+    if (document.hidden) {
+      carouselRunning = false;
+    } else if (gridView.style.display !== 'none') {
+      carouselRunning = true;
+      carouselLastTime = 0;
+      requestAnimationFrame(tickCarousel);
+    }
   });
 
   // --- Email capture bar ---
