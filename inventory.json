@@ -1,5 +1,30 @@
 [
   {
+    "id": "000003",
+    "title": "Brown Lid Ceramic",
+    "description": "Brown and green variegated glazed studio ceramic lidded jar with abstract lid handle.",
+    "price": 85,
+    "size": "7.75\" H",
+    "category": "ceramic",
+    "maker": "Artist signed (BC)",
+    "condition": "",
+    "dealerCode": "6SCH",
+    "postedBy": "",
+    "isNew": true,
+    "isHold": false,
+    "isSold": false,
+    "inCarousel": false,
+    "images": [
+      "images/products/000003/brown_lid_ceramic_1.jpg",
+      "images/products/000003/brown_lid_ceramic_2.jpg",
+      "images/products/000003/brown_lid_ceramic_3.jpg",
+      "images/products/000003/brown_lid_ceramic_4.jpg"
+    ],
+    "heroImage": "images/products/000003/brown_lid_ceramic_1.jpg",
+    "order": 0,
+    "createdAt": "2026-04-07T18:46:57.635Z"
+  },
+  {
     "id": "000002",
     "title": "Studio Ceramic",
     "description": "Small studio ceramic pot with a variegated brown and beige glaze.",
@@ -21,7 +46,7 @@
       "images/products/000002/studio_ceramic_4.jpg"
     ],
     "heroImage": "images/products/000002/studio_ceramic_1.jpg",
-    "order": 0,
+    "order": 1,
     "createdAt": "2026-04-05T00:01:02.103Z"
   },
   {
@@ -45,7 +70,7 @@
       "images/products/000001/deep_green_cylinder_vase_2.jpg"
     ],
     "heroImage": "images/products/000001/deep_green_cylinder_vase_3.jpg",
-    "order": 1,
+    "order": 2,
     "createdAt": "2026-04-04T23:45:57.285Z"
   }
 ]
