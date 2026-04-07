@@ -1,5 +1,28 @@
 [
   {
+    "id": "000006",
+    "title": "Brutalist Ceramic Sleeve",
+    "description": "Tall blue and brown textured abstract ceramic sculpture with organic shapes and raw finish.",
+    "price": 120,
+    "size": "",
+    "category": "sculpture",
+    "maker": "",
+    "condition": "",
+    "dealerCode": "65CH",
+    "postedBy": "",
+    "isNew": true,
+    "isHold": false,
+    "isSold": false,
+    "inCarousel": true,
+    "images": [
+      "images/products/000006/brutalist_ceramic_sleeve_1.jpg",
+      "images/products/000006/brutalist_ceramic_sleeve_2.jpg"
+    ],
+    "heroImage": "images/products/000006/brutalist_ceramic_sleeve_1.jpg",
+    "order": 0,
+    "createdAt": "2026-04-07T21:20:35.430Z"
+  },
+  {
     "id": "000005",
     "title": "Ipe Wood Bowl",
     "description": "Dark and light two-tone wood serving bowl.",
@@ -18,7 +41,7 @@
       "images/products/000005/ipe_wood_bowl_1.jpg"
     ],
     "heroImage": "images/products/000005/ipe_wood_bowl_1.jpg",
-    "order": 0,
+    "order": 1,
     "createdAt": "2026-04-07T21:15:47.892Z"
   },
   {
@@ -41,7 +64,7 @@
       "images/products/000004/small_primitive_studio_bowl_2.jpg"
     ],
     "heroImage": "images/products/000004/small_primitive_studio_bowl_1.jpg",
-    "order": 2,
+    "order": 3,
     "createdAt": "2026-04-07T19:06:29.852Z"
   },
   {
@@ -66,7 +89,7 @@
       "images/products/000003/brown_lid_ceramic_4.jpg"
     ],
     "heroImage": "images/products/000003/brown_lid_ceramic_1.jpg",
-    "order": 3,
+    "order": 4,
     "createdAt": "2026-04-07T18:46:57.635Z"
   },
   {
@@ -91,7 +114,7 @@
       "images/products/000002/studio_ceramic_4.jpg"
     ],
     "heroImage": "images/products/000002/studio_ceramic_1.jpg",
-    "order": 4,
+    "order": 5,
     "createdAt": "2026-04-05T00:01:02.103Z"
   },
   {
@@ -115,7 +138,7 @@
       "images/products/000001/deep_green_cylinder_vase_2.jpg"
     ],
     "heroImage": "images/products/000001/deep_green_cylinder_vase_3.jpg",
-    "order": 5,
+    "order": 6,
     "createdAt": "2026-04-04T23:45:57.285Z"
   }
 ]
