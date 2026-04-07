@@ -58,7 +58,7 @@ export default {
 
 function corsHeaders(request) {
   const origin = request?.headers?.get('Origin') || '';
-  const allowed = ['https://harker760.com', 'https://www.harker760.com', 'https://elikagan.github.io', 'http://harker760.com'];
+  const allowed = ['https://harker760.com', 'https://www.harker760.com', 'https://elikagan.github.io'];
   return {
     'Access-Control-Allow-Origin': allowed.includes(origin) ? origin : allowed[0],
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
