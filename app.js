@@ -646,17 +646,7 @@
 
   const carouselTrack = document.getElementById('carousel-track');
   const carouselEl = document.getElementById('carousel');
-  const prevBtn = document.getElementById('carousel-prev');
-  const nextBtn = document.getElementById('carousel-next');
-  let carouselPos = 0;
-  let carouselSlideCount = 0;
-  let carouselAutoTimer = null;
-
-  function slidesPerView() {
-    if (window.innerWidth <= 559) return 2;
-    if (window.innerWidth <= 959) return 3;
-    return 4;
-  }
+  let carouselAnim = null;
 
   function initCarousel() {
     const available = items.filter(i => i.inCarousel && !i.isSold && (i.heroImage || (i.images && i.images.length > 0)));
@@ -664,12 +654,13 @@
 
     carouselEl.style.display = '';
     carouselTrack.innerHTML = '';
-    carouselPos = 0;
+    if (carouselAnim) { carouselAnim.cancel(); carouselAnim = null; }
 
     const shuffled = [...available].sort(() => Math.random() - 0.5);
-    carouselSlideCount = shuffled.length;
 
-    shuffled.forEach(item => {
+    // Duplicate slides for seamless infinite loop
+    const allSlides = [...shuffled, ...shuffled];
+    allSlides.forEach(item => {
       const slide = document.createElement('a');
       slide.className = 'carousel-slide';
       slide.href = '#' + item.id;
@@ -677,44 +668,22 @@
       carouselTrack.appendChild(slide);
     });
 
-    updateCarousel();
-    startCarouselAuto();
+    startCarouselLoop(shuffled.length);
   }
 
-  function updateCarousel() {
-    const perView = slidesPerView();
-    const maxPos = Math.max(0, carouselSlideCount - perView);
-    if (carouselPos > maxPos) carouselPos = maxPos;
-    if (carouselPos < 0) carouselPos = 0;
-    const pct = carouselPos * (100 / carouselSlideCount);
-    carouselTrack.style.transform = `translateX(-${pct}%)`;
-    prevBtn.style.display = carouselPos <= 0 ? 'none' : '';
-    nextBtn.style.display = carouselPos >= maxPos ? 'none' : '';
+  function startCarouselLoop(count) {
+    // Animate from 0 to -50% (the duplicated half) then seamlessly loop
+    const duration = count * 4000; // 4s per slide
+    carouselAnim = carouselTrack.animate(
+      [{ transform: 'translateX(0)' }, { transform: 'translateX(-50%)' }],
+      { duration, iterations: Infinity, easing: 'linear' }
+    );
   }
-
-  prevBtn.addEventListener('click', () => { carouselPos--; updateCarousel(); resetCarouselAuto(); });
-  nextBtn.addEventListener('click', () => { carouselPos++; updateCarousel(); resetCarouselAuto(); });
-
-  function startCarouselAuto() {
-    stopCarouselAuto();
-    carouselAutoTimer = setInterval(() => {
-      const maxPos = Math.max(0, carouselSlideCount - slidesPerView());
-      carouselPos = carouselPos >= maxPos ? 0 : carouselPos + 1;
-      updateCarousel();
-    }, 4000);
-  }
-
-  function stopCarouselAuto() {
-    if (carouselAutoTimer) { clearInterval(carouselAutoTimer); carouselAutoTimer = null; }
-  }
-
-  function resetCarouselAuto() { stopCarouselAuto(); startCarouselAuto(); }
-
-  window.addEventListener('resize', () => updateCarousel());
 
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) stopCarouselAuto();
-    else if (gridView.style.display !== 'none') startCarouselAuto();
+    if (!carouselAnim) return;
+    if (document.hidden) carouselAnim.pause();
+    else if (gridView.style.display !== 'none') carouselAnim.play();
   });
 
   // --- Email capture bar ---

@@ -221,18 +221,17 @@ header {
   position: relative;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 24px 32px;
+  padding: 0 0 32px;
   overflow: hidden;
 }
 
 .carousel-track {
   display: flex;
-  transition: transform 0.4s ease;
   gap: 3px;
 }
 
 .carousel-slide {
-  flex: 0 0 calc(25% - 2.25px);
+  flex: 0 0 calc(33.333% - 2px);
   aspect-ratio: 1;
   overflow: hidden;
   cursor: pointer;
@@ -246,38 +245,12 @@ header {
   display: block;
 }
 
-.carousel-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(255,255,255,0.9);
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: var(--black);
-  z-index: 2;
-  transition: opacity 0.2s;
-}
-
-.carousel-btn:hover { opacity: 0.7; }
-
-.carousel-prev { left: 28px; }
-.carousel-next { right: 28px; }
-
 @media (max-width: 959px) {
-  .carousel-slide { flex: 0 0 calc(33.333% - 2px); }
+  .carousel-slide { flex: 0 0 calc(50% - 1.5px); }
 }
 
 @media (max-width: 559px) {
-  .carousel-slide { flex: 0 0 calc(50% - 1.5px); }
-  .carousel-btn { width: 30px; height: 30px; }
-  .carousel-prev { left: 20px; }
-  .carousel-next { right: 20px; }
+  .carousel-slide { flex: 0 0 100%; }
 }
 
 /* --- Grid --- */
