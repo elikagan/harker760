@@ -232,16 +232,19 @@ header {
 
 .carousel-slide {
   flex: 0 0 calc(33.333% - 2px);
-  aspect-ratio: 1;
+  aspect-ratio: 10 / 11;
   overflow: hidden;
   cursor: pointer;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg, #fafafa);
 }
 
 .carousel-slide img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
   display: block;
 }
 
