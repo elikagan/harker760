@@ -671,14 +671,41 @@
     startCarouselLoop(shuffled.length);
   }
 
+  let carouselCount = 0;
+
   function startCarouselLoop(count) {
-    // Animate from 0 to -50% (the duplicated half) then seamlessly loop
-    const duration = count * 4000; // 4s per slide
+    carouselCount = count;
+    const duration = count * 1200; // ~70% faster (was 4000ms/slide)
     carouselAnim = carouselTrack.animate(
       [{ transform: 'translateX(0)' }, { transform: 'translateX(-50%)' }],
       { duration, iterations: Infinity, easing: 'linear' }
     );
   }
+
+  // Touch swipe support
+  let swipeStartX = 0;
+  let swipeStartTime = 0;
+  carouselEl.addEventListener('touchstart', e => {
+    swipeStartX = e.touches[0].clientX;
+    swipeStartTime = Date.now();
+    if (carouselAnim) carouselAnim.pause();
+  }, { passive: true });
+
+  carouselEl.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - swipeStartX;
+    const dt = Date.now() - swipeStartTime;
+    if (Math.abs(dx) > 40 && dt < 500) {
+      // Swipe detected — jump forward or backward by nudging the animation time
+      if (carouselAnim && carouselCount > 0) {
+        const jumpPct = 1 / carouselCount;
+        const dur = carouselAnim.effect.getTiming().duration;
+        const cur = carouselAnim.currentTime % dur;
+        const shift = dur * jumpPct;
+        carouselAnim.currentTime = dx < 0 ? cur + shift : Math.max(0, cur - shift);
+      }
+    }
+    if (carouselAnim) carouselAnim.play();
+  }, { passive: true });
 
   document.addEventListener('visibilitychange', () => {
     if (!carouselAnim) return;
