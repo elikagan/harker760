@@ -1,27 +1,5 @@
 [
   {
-    "id": "000005",
-    "title": "Small Grey Vase",
-    "description": "Small grey ceramic bud vase with a matte glaze and handmade aesthetic.",
-    "price": 70,
-    "size": "",
-    "category": "ceramic",
-    "maker": "OI",
-    "condition": "Good",
-    "dealerCode": "10",
-    "postedBy": "",
-    "isNew": true,
-    "isHold": false,
-    "isSold": false,
-    "inCarousel": true,
-    "images": [
-      "images/products/000005/small_grey_vase_1.jpg"
-    ],
-    "heroImage": "images/products/000005/small_grey_vase_1.jpg",
-    "order": 0,
-    "createdAt": "2026-04-07T21:05:52.843Z"
-  },
-  {
     "id": "000004",
     "title": "Small Primitive Studio Bowl",
     "description": "Dark blue and brown glazed ceramic studio pottery bowl.",
