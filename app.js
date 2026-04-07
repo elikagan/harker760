@@ -658,13 +658,13 @@
 
     const shuffled = [...available].sort(() => Math.random() - 0.5);
 
-    // Duplicate slides for seamless infinite loop
+    // Duplicate slides for seamless infinite loop — use full images (not thumbs) for carousel
     const allSlides = [...shuffled, ...shuffled];
     allSlides.forEach(item => {
       const slide = document.createElement('a');
       slide.className = 'carousel-slide';
       slide.href = '#' + item.id;
-      slide.innerHTML = `<img src="${thumbUrl(item.heroImage || item.images[0])}" alt="${esc(item.title)}" loading="lazy">`;
+      slide.innerHTML = `<img src="${imgUrl(item.heroImage || item.images[0])}" alt="${esc(item.title)}" loading="lazy">`;
       carouselTrack.appendChild(slide);
     });
 
@@ -676,62 +676,56 @@
   let carouselRunning = false;
   let carouselLastTime = 0;
   let carouselSpeed = 0; // px per ms
+  let carouselDragging = false;
+  let swipeStartX = 0;
+  let swipeLastX = 0;
+  let swiped = false;
 
   function startCarouselLoop(count) {
     carouselCount = count;
     carouselOffset = 0;
     carouselRunning = true;
     carouselLastTime = 0;
-    // Speed: traverse one set of slides in count * 1200ms
-    const totalWidth = carouselTrack.scrollWidth / 2;
-    carouselSpeed = totalWidth / (count * 1200);
+    // ~150px/sec — fast continuous scroll
+    carouselSpeed = 0.15;
     requestAnimationFrame(tickCarousel);
   }
 
   function tickCarousel(ts) {
-    if (!carouselRunning) return;
+    if (!carouselRunning || carouselDragging) { carouselLastTime = 0; requestAnimationFrame(tickCarousel); return; }
     if (!carouselLastTime) carouselLastTime = ts;
     const dt = ts - carouselLastTime;
     carouselLastTime = ts;
     carouselOffset += carouselSpeed * dt;
     const halfWidth = carouselTrack.scrollWidth / 2;
-    if (halfWidth > 0) carouselOffset = carouselOffset % halfWidth;
+    if (halfWidth > 0) carouselOffset = ((carouselOffset % halfWidth) + halfWidth) % halfWidth;
     carouselTrack.style.transform = `translateX(-${carouselOffset}px)`;
     requestAnimationFrame(tickCarousel);
   }
 
-  // Touch swipe support
-  let swipeStartX = 0;
-  let swipeStartTime = 0;
-  let swiped = false;
+  // Touch: drag to move, flick to snap
   carouselEl.addEventListener('touchstart', e => {
     swipeStartX = e.touches[0].clientX;
-    swipeStartTime = Date.now();
+    swipeLastX = swipeStartX;
     swiped = false;
-    carouselRunning = false;
+    carouselDragging = true;
   }, { passive: true });
 
   carouselEl.addEventListener('touchmove', e => {
-    const dx = e.touches[0].clientX - swipeStartX;
-    if (Math.abs(dx) > 10) swiped = true;
+    const x = e.touches[0].clientX;
+    const dx = swipeLastX - x;
+    swipeLastX = x;
+    carouselOffset += dx;
+    const halfWidth = carouselTrack.scrollWidth / 2;
+    if (halfWidth > 0) carouselOffset = ((carouselOffset % halfWidth) + halfWidth) % halfWidth;
+    carouselTrack.style.transform = `translateX(-${carouselOffset}px)`;
+    if (Math.abs(x - swipeStartX) > 10) swiped = true;
   }, { passive: true });
 
-  carouselEl.addEventListener('touchend', e => {
-    const dx = e.changedTouches[0].clientX - swipeStartX;
-    const dt = Date.now() - swipeStartTime;
-    if (Math.abs(dx) > 40 && dt < 500) {
-      // Swipe — jump one slide width
-      const slideWidth = carouselTrack.scrollWidth / (carouselCount * 2);
-      carouselOffset += dx < 0 ? slideWidth : -slideWidth;
-      const halfWidth = carouselTrack.scrollWidth / 2;
-      if (halfWidth > 0) carouselOffset = ((carouselOffset % halfWidth) + halfWidth) % halfWidth;
-      carouselTrack.style.transform = `translateX(-${carouselOffset}px)`;
-    }
-    if (swiped) e.preventDefault();
-    carouselRunning = true;
+  carouselEl.addEventListener('touchend', () => {
+    carouselDragging = false;
     carouselLastTime = 0;
-    requestAnimationFrame(tickCarousel);
-  });
+  }, { passive: true });
 
   // Prevent click navigation when swiping
   carouselEl.addEventListener('click', e => {
@@ -744,7 +738,6 @@
     } else if (gridView.style.display !== 'none') {
       carouselRunning = true;
       carouselLastTime = 0;
-      requestAnimationFrame(tickCarousel);
     }
   });
 
