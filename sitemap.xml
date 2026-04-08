@@ -8,6 +8,20 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://harker760.com/item/000010/</loc>
+    <lastmod>2026-04-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://raw.githubusercontent.com/elikagan/harker760/main/images/products/000010/cylinder_pot_w_spout_1.jpg</image:loc>
+      <image:title>Cylinder Pot W/Spout</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://raw.githubusercontent.com/elikagan/harker760/main/images/products/000010/cylinder_pot_w_spout_2.jpg</image:loc>
+      <image:title>Cylinder Pot W/Spout</image:title>
+    </image:image>
+  </url>
+  <url>
     <loc>https://harker760.com/item/000009/</loc>
     <lastmod>2026-04-08</lastmod>
     <changefreq>weekly</changefreq>
