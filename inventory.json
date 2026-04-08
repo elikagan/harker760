@@ -1,10 +1,32 @@
 [
   {
+    "id": "000009",
+    "title": "Terracotta Hanging Lantern",
+    "description": "Unglazed terracotta hanging lantern with a perforated teardrop shape.",
+    "price": 120,
+    "size": "",
+    "category": "ceramic",
+    "maker": "",
+    "condition": "Good",
+    "dealerCode": "65CH",
+    "postedBy": "",
+    "isNew": true,
+    "isHold": false,
+    "isSold": false,
+    "inCarousel": true,
+    "images": [
+      "images/products/000009/terracotta_hanging_lantern_1.jpg"
+    ],
+    "heroImage": "images/products/000009/terracotta_hanging_lantern_1.jpg",
+    "order": 0,
+    "createdAt": "2026-04-08T18:55:43.597Z"
+  },
+  {
     "id": "000008",
     "title": "Robin Harker Framed Abstract Painting",
     "description": "Abstract oil painting on canvas in muted green, blue, and brown tones with a thin wood frame.",
     "price": 4200,
-    "size": "3’x 4’",
+    "size": "3âx 4â",
     "category": "wall-art",
     "maker": "Robin Harker",
     "condition": "",
@@ -18,7 +40,7 @@
       "images/products/000008/robin_harker_framed_abstract_painting_1.jpg"
     ],
     "heroImage": "images/products/000008/robin_harker_framed_abstract_painting_1.jpg",
-    "order": 0,
+    "order": 1,
     "createdAt": "2026-04-07T21:59:48.309Z"
   },
   {
@@ -26,7 +48,7 @@
     "title": "Wood Box",
     "description": "Jewelry box with drawers",
     "price": 120,
-    "size": "7Ã¢ÂÂW x 5Ã¢ÂÂH",
+    "size": "7ÃÂ¢ÃÂÃÂW x 5ÃÂ¢ÃÂÃÂH",
     "category": "object",
     "maker": "",
     "condition": "Good",
@@ -41,7 +63,7 @@
       "images/products/000007/wood_box_2.jpg"
     ],
     "heroImage": "images/products/000007/wood_box_1.jpg",
-    "order": 2,
+    "order": 3,
     "createdAt": "2026-04-07T21:29:38.258Z"
   },
   {
@@ -49,7 +71,7 @@
     "title": "Brutalist Ceramic Sleeve",
     "description": "Tall blue and brown textured abstract ceramic sculpture with organic shapes and raw finish.",
     "price": 120,
-    "size": "14ÃÂ¢ÃÂÃÂH",
+    "size": "14ÃÂÃÂ¢ÃÂÃÂÃÂÃÂH",
     "category": "sculpture",
     "maker": "",
     "condition": "",
@@ -64,7 +86,7 @@
       "images/products/000006/brutalist_ceramic_sleeve_2.jpg"
     ],
     "heroImage": "images/products/000006/brutalist_ceramic_sleeve_1.jpg",
-    "order": 3,
+    "order": 4,
     "createdAt": "2026-04-07T21:20:35.430Z"
   },
   {
@@ -86,7 +108,7 @@
       "images/products/000005/ipe_wood_bowl_1.jpg"
     ],
     "heroImage": "images/products/000005/ipe_wood_bowl_1.jpg",
-    "order": 4,
+    "order": 5,
     "createdAt": "2026-04-07T21:15:47.892Z"
   },
   {
@@ -109,7 +131,7 @@
       "images/products/000004/small_primitive_studio_bowl_2.jpg"
     ],
     "heroImage": "images/products/000004/small_primitive_studio_bowl_1.jpg",
-    "order": 6,
+    "order": 7,
     "createdAt": "2026-04-07T19:06:29.852Z"
   },
   {
@@ -134,7 +156,7 @@
       "images/products/000003/brown_lid_ceramic_4.jpg"
     ],
     "heroImage": "images/products/000003/brown_lid_ceramic_1.jpg",
-    "order": 7,
+    "order": 8,
     "createdAt": "2026-04-07T18:46:57.635Z"
   },
   {
@@ -159,7 +181,7 @@
       "images/products/000002/studio_ceramic_4.jpg"
     ],
     "heroImage": "images/products/000002/studio_ceramic_1.jpg",
-    "order": 8,
+    "order": 9,
     "createdAt": "2026-04-05T00:01:02.103Z"
   },
   {
@@ -183,7 +205,7 @@
       "images/products/000001/deep_green_cylinder_vase_2.jpg"
     ],
     "heroImage": "images/products/000001/deep_green_cylinder_vase_3.jpg",
-    "order": 9,
+    "order": 10,
     "createdAt": "2026-04-04T23:45:57.285Z"
   }
 ]
