@@ -3,9 +3,19 @@
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://harker760.com/</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-08</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://harker760.com/item/000009/</loc>
+    <lastmod>2026-04-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://raw.githubusercontent.com/elikagan/harker760/main/images/products/000009/terracotta_hanging_lantern_1.jpg</image:loc>
+      <image:title>Terracotta Hanging Lantern</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://harker760.com/item/000008/</loc>
