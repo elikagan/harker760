@@ -102,6 +102,10 @@
   const filterLabel = document.getElementById('filter-label');
   const filterDropdown = document.getElementById('filter-dropdown');
 
+  // Carousel state (declared early so showDetail/showGrid can reference)
+  let carouselRunning = false;
+  let carouselLastTime = 0;
+
   const categoryLabels = {
     'all': 'All', 'under-400': 'Under $400', 'wall-art': 'Wall Art',
     'object': 'Object', 'ceramic': 'Ceramic', 'furniture': 'Furniture',
@@ -438,7 +442,7 @@
       thumbStrip.style.display = 'none';
     }
 
-    stopMosaic();
+    carouselRunning = false;
     gridView.style.display = 'none';
     detailView.style.display = '';
     aboutView.style.display = 'none';
@@ -451,11 +455,11 @@
     aboutView.style.display = 'none';
     notfoundView.style.display = 'none';
     gridView.style.display = '';
-    startCarouselAuto();
+    carouselRunning = true; carouselLastTime = 0; requestAnimationFrame(tickCarousel);
   }
 
   function showAbout() {
-    stopMosaic();
+    carouselRunning = false;
     gridView.style.display = 'none';
     detailView.style.display = 'none';
     notfoundView.style.display = 'none';
@@ -464,7 +468,7 @@
   }
 
   function showNotFound() {
-    stopMosaic();
+    carouselRunning = false;
     gridView.style.display = 'none';
     detailView.style.display = 'none';
     aboutView.style.display = 'none';
@@ -673,8 +677,6 @@
 
   let carouselCount = 0;
   let carouselOffset = 0;
-  let carouselRunning = false;
-  let carouselLastTime = 0;
   let carouselSpeed = 0; // px per ms
   let carouselDragging = false;
   let swipeStartX = 0;
