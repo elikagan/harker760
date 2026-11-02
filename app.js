@@ -2,6 +2,7 @@
   const PHONE = '7605868800';
   const EMAIL = 'info@harker760.com';
   const CHECKOUT_URL = 'https://h760-checkout.objectlesson.workers.dev/checkout';
+  const DISCOUNT_URL = 'https://h760-checkout.objectlesson.workers.dev/discount';
 
   // Detect return from Square checkout
   const urlParams = new URLSearchParams(location.search);
@@ -332,11 +333,7 @@
           buyEl.disabled = true;
           trackEvent('buy_now', id);
           try {
-            const body = {
-              title: item.title,
-              price: Number(item.price),
-              itemId: item.id
-            };
+            const body = { itemId: item.id };
             if (appliedDiscount) body.discountCode = appliedDiscount.code;
             const res = await fetch(CHECKOUT_URL, {
               method: 'POST',
@@ -850,24 +847,14 @@
     discountApplyBtn.textContent = '...';
 
     try {
-      const res = await fetch(`${SUPA_URL}/rest/v1/discount_codes?code=eq.${encodeURIComponent(code)}&is_active=eq.true&select=code,type,value,max_uses,used_count`, {
-        headers: {
-          'apikey': SUPA_ANON,
-          'Authorization': 'Bearer ' + SUPA_ANON
-        }
+      const res = await fetch(DISCOUNT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code })
       });
-      const data = await res.json();
+      const disc = await res.json();
 
-      if (data.length === 0) {
-        discountInput.style.borderColor = '#c00';
-        setTimeout(() => { discountInput.style.borderColor = ''; }, 2000);
-        discountApplyBtn.disabled = false;
-        discountApplyBtn.textContent = 'Apply';
-        return;
-      }
-
-      const disc = data[0];
-      if (disc.max_uses && disc.used_count >= disc.max_uses) {
+      if (!res.ok || !disc.code) {
         discountInput.style.borderColor = '#c00';
         setTimeout(() => { discountInput.style.borderColor = ''; }, 2000);
         discountApplyBtn.disabled = false;
