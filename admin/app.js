@@ -2,12 +2,11 @@
   'use strict';
 
   // --- Config ---
-  const APP_VERSION = 'v58';
+  const APP_VERSION = 'v59';
   const REPO = 'harker760';
   const OWNER = 'elikagan';
   const BRANCH = 'main';
-  // GitHub API calls routed through worker (no client-side token)
-  const PIN_HASH = '7f6257b880b51353e620ab9224907e72348e8d2c3c1f6e0ba9866661acbc05e9';
+  const WORKER_URL = 'https://h760-checkout.objectlesson.workers.dev';
 
   // --- IndexedDB persistent storage ---
   const DB_NAME = 'h760_admin';
@@ -45,10 +44,7 @@
   }
 
   // --- State ---
-  // All API keys are server-side in Cloudflare Worker secrets
-  const supaUrl = 'https://gjlwoibtdgxlhtfswdkk.supabase.co';
-  const supaKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdqbHdvaWJ0ZGd4bGh0ZnN3ZGtrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNTYzODgsImV4cCI6MjA4NzczMjM4OH0.4QSS1BBMBuqbMtLjo_Tr0_WVTS48YYNsNYvtEMTf33U';
-  let currentPin = null;
+  let authToken = '';
   let items = [];
   let inventorySha = '';
   let editingId = null;
@@ -56,43 +52,6 @@
   let sortable = null;
   let photoSortable = null;
   let analyticsRange = 1;
-
-  // --- Encrypted config (keys stored in repo, decrypted with PIN) ---
-
-  function xorCipher(key, text) {
-    return text.split('').map((c, i) =>
-      String.fromCharCode(c.charCodeAt(0) ^ key.charCodeAt(i % key.length))
-    ).join('');
-  }
-
-  async function encryptConfig(pin, data) {
-    const json = JSON.stringify(data);
-    if (!crypto.subtle) return 'X' + btoa(xorCipher(pin, json));
-    const salt = crypto.getRandomValues(new Uint8Array(16));
-    const iv = crypto.getRandomValues(new Uint8Array(12));
-    const km = await crypto.subtle.importKey('raw', new TextEncoder().encode(pin), 'PBKDF2', false, ['deriveKey']);
-    const key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' }, km, { name: 'AES-GCM', length: 256 }, false, ['encrypt']);
-    const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, new TextEncoder().encode(json));
-    const buf = new Uint8Array(28 + ct.byteLength);
-    buf.set(salt, 0);
-    buf.set(iv, 16);
-    buf.set(new Uint8Array(ct), 28);
-    return 'A' + btoa(String.fromCharCode(...buf));
-  }
-
-  async function decryptConfig(pin, encoded) {
-    if (encoded[0] === 'X') return JSON.parse(xorCipher(pin, atob(encoded.slice(1))));
-    const buf = Uint8Array.from(atob(encoded.slice(1)), c => c.charCodeAt(0));
-    const salt = buf.slice(0, 16);
-    const iv = buf.slice(16, 28);
-    const ct = buf.slice(28);
-    const km = await crypto.subtle.importKey('raw', new TextEncoder().encode(pin), 'PBKDF2', false, ['deriveKey']);
-    const key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' }, km, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
-    const dec = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ct);
-    return JSON.parse(new TextDecoder().decode(dec));
-  }
-
-  // Config backup removed — all keys are server-side worker secrets now
 
   // --- DOM refs ---
   const viewLock = document.getElementById('view-lock');
@@ -113,56 +72,47 @@
   const versionLabel = document.getElementById('version-label');
   if (versionLabel) versionLabel.textContent = APP_VERSION;
 
-  // --- PIN Lock ---
+  // --- Login (PIN is checked by the server) ---
 
-  async function hashPin(pin) {
-    const data = new TextEncoder().encode(pin);
-    if (crypto.subtle) {
-      const buf = await crypto.subtle.digest('SHA-256', data);
-      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+  async function api(path, init = {}) {
+    const res = await fetch(WORKER_URL + path, {
+      ...init,
+      headers: { 'Content-Type': 'application/json', ...(init.headers || {}), 'Authorization': 'Bearer ' + authToken }
+    });
+    if (res.status === 401) {
+      authToken = '';
+      await store('h760_token', '');
+      showView('lock');
+      throw new Error('Session expired. Enter your PIN.');
     }
-    // Fallback for HTTP (no crypto.subtle)
-    let h0=0x6a09e667,h1=0xbb67ae85,h2=0x3c6ef372,h3=0xa54ff53a,h4=0x510e527f,h5=0x9b05688c,h6=0x1f83d9ab,h7=0x5be0cd19;
-    const k=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
-    const m=new Uint8Array(((data.length+9+63)&~63));m.set(data);m[data.length]=0x80;const dv=new DataView(m.buffer);dv.setUint32(m.length-4,data.length*8);
-    for(let o=0;o<m.length;o+=64){const w=new Int32Array(64);for(let i=0;i<16;i++)w[i]=dv.getUint32(o+i*4);for(let i=16;i<64;i++){const s0=((w[i-15]>>>7|w[i-15]<<25)^(w[i-15]>>>18|w[i-15]<<14)^(w[i-15]>>>3));const s1=((w[i-2]>>>17|w[i-2]<<15)^(w[i-2]>>>19|w[i-2]<<13)^(w[i-2]>>>10));w[i]=(w[i-16]+s0+w[i-7]+s1)|0;}let a=h0,b=h1,c=h2,d=h3,e=h4,f=h5,g=h6,h=h7;for(let i=0;i<64;i++){const S1=((e>>>6|e<<26)^(e>>>11|e<<21)^(e>>>25|e<<7));const ch=(e&f)^(~e&g);const t1=(h+S1+ch+k[i]+w[i])|0;const S0=((a>>>2|a<<30)^(a>>>13|a<<19)^(a>>>22|a<<10));const maj=(a&b)^(a&c)^(b&c);const t2=(S0+maj)|0;h=g;g=f;f=e;e=(d+t1)|0;d=c;c=b;b=a;a=(t1+t2)|0;}h0=(h0+a)|0;h1=(h1+b)|0;h2=(h2+c)|0;h3=(h3+d)|0;h4=(h4+e)|0;h5=(h5+f)|0;h6=(h6+g)|0;h7=(h7+h)|0;}
-    return [h0,h1,h2,h3,h4,h5,h6,h7].map(v=>(v>>>0).toString(16).padStart(8,'0')).join('');
+    return res;
   }
-
-  // Rate limiting for PIN attempts
-  const MAX_ATTEMPTS = 5;
-  const LOCKOUT_MS = 5 * 60 * 1000; // 5 minutes
-  let pinAttempts = 0;
-  let lockoutUntil = 0;
 
   document.getElementById('form-unlock').addEventListener('submit', async (e) => {
     e.preventDefault();
-
-    // Check lockout
-    if (Date.now() < lockoutUntil) {
-      const mins = Math.ceil((lockoutUntil - Date.now()) / 60000);
-      toast(`Locked out. Try again in ${mins}m`);
-      return;
-    }
-
-    const pin = document.getElementById('input-pin').value;
-    const hash = await hashPin(pin);
-    if (hash === PIN_HASH) {
-      pinAttempts = 0;
-      currentPin = pin;
-      await store('h760_unlocked', '1');
-      await boot(pin);
-    } else {
-      pinAttempts++;
-      if (pinAttempts >= MAX_ATTEMPTS) {
-        lockoutUntil = Date.now() + LOCKOUT_MS;
-        pinAttempts = 0;
-        toast('Too many attempts. Locked for 5 minutes');
+    const pinInput = document.getElementById('input-pin');
+    const btn = document.getElementById('btn-unlock');
+    btn.disabled = true;
+    try {
+      const res = await fetch(WORKER_URL + '/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pin: pinInput.value })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.token) {
+        authToken = data.token;
+        await store('h760_token', authToken);
+        pinInput.value = '';
+        await boot();
       } else {
-        toast(`Wrong PIN (${MAX_ATTEMPTS - pinAttempts} left)`);
+        toast(data.error || 'Wrong PIN');
+        pinInput.value = '';
       }
-      document.getElementById('input-pin').value = '';
+    } catch {
+      toast('Could not reach the server. Try again.');
     }
+    btn.disabled = false;
   });
 
   // --- Init ---
@@ -171,18 +121,9 @@
     navigator.serviceWorker.register('sw.js');
   }
 
-  // One-time: clear old cookies and localStorage from previous versions
-  ['ol_unlocked', 'ol_gh_token', 'ol_gemini_key', 'ol_dealer_code'].forEach(k => {
-    try { localStorage.removeItem(k); } catch {}
-    document.cookie = k + '=;path=/admin;max-age=0';
-  });
-
-  // Boot: PIN unlocks admin, all API keys are server-side
-  async function boot(pin) {
-    if (pin) currentPin = pin;
-    const unlocked = await load('h760_unlocked');
-
-    if (!unlocked && !currentPin) {
+  async function boot() {
+    if (!authToken) authToken = await load('h760_token');
+    if (!authToken) {
       showView('lock');
       return;
     }
@@ -304,9 +245,8 @@
 
   // All GitHub API calls go through worker (token stays server-side)
   async function ghProxy(action, path, opts = {}) {
-    const res = await fetch(WORKER_URL + '/admin/github', {
+    const res = await api('/admin/github', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action, path: `${OWNER}/${REPO}/contents/${opts.filePath || path}`, ...opts })
     });
     const data = await res.json();
@@ -360,7 +300,7 @@
       const file = await getFile('inventory.json');
       inventorySha = file.sha;
       if (file.content) {
-        items = JSON.parse(atob(file.content.replace(/\n/g, '')));
+        items = JSON.parse(decodeURIComponent(escape(atob(file.content.replace(/\n/g, '')))));
       } else {
         // File >1MB — Contents API omits content; fetch raw instead
         const res = await fetch(`https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/inventory.json?t=${Date.now()}`);
@@ -378,7 +318,7 @@
 
   async function reconcileSales() {
     try {
-      const resp = await fetch(`${WORKER_URL}/sales`, { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+      const resp = await api('/sales', { method: 'POST' });
       if (!resp.ok) return;
       const data = await resp.json();
       const sales = data.sales || [];
@@ -998,9 +938,8 @@
   // --- Gemini API ---
 
   async function geminiCall(model, contents, config = {}) {
-    const res = await fetch(WORKER_URL + '/admin/gemini', {
+    const res = await api('/admin/gemini', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ model, contents, generationConfig: config })
     });
     if (!res.ok) {
@@ -1120,8 +1059,6 @@
     }
     return null;
   }
-
-  const WORKER_URL = 'https://h760-checkout.objectlesson.workers.dev';
 
   // Gemini lighting enhancement on already-cutout image
   async function geminiEnhanceLighting(dataUrl) {
@@ -1316,9 +1253,6 @@
         })
       }).catch(() => {});
 
-      // 4. Ping Google sitemap (simple GET)
-      fetch(`https://www.google.com/ping?sitemap=${encodeURIComponent(SITE_URL + '/sitemap.xml')}`).catch(() => {});
-
       console.log('[SEO] Updated page + sitemap + pinged search engines for', savedItem.id);
     } catch (e) {
       console.warn('[SEO] Failed:', e.message);
@@ -1461,11 +1395,7 @@
   };
 
   async function supaSelect(params) {
-    if (!supaUrl || !supaKey) return [];
-    const url = `${supaUrl}/rest/v1/events?${params}`;
-    const res = await fetch(url, {
-      headers: { 'apikey': supaKey, 'Authorization': 'Bearer ' + supaKey }
-    });
+    const res = await api(`/admin/db/events?${params}`);
     if (!res.ok) return [];
     return res.json();
   }
@@ -1488,11 +1418,6 @@
   async function loadAnalytics() {
     const body = document.getElementById('analytics-body');
 
-    if (!supaUrl || !supaKey) {
-      body.innerHTML = '<div class="analytics-empty">Add your Supabase URL and Service Key in Settings to enable analytics.</div>';
-      return;
-    }
-
     body.innerHTML = '<div class="analytics-loading"><span class="spinner"></span> Loading...</div>';
 
     try {
@@ -1514,7 +1439,7 @@
         supaSelect(`select=session_id,created_at,referrer,utm_source,ua_mobile&event=eq.page_view&created_at=gte.${daysAgoStr(pvDays)}&order=created_at.asc&limit=50000`),
         supaSelect(`select=item_id,event&event=in.(item_view,inquire)&created_at=gte.${daysAgoStr(range)}&item_id=not.is.null&limit=50000`),
         supaSelect(`select=duration,created_at&event=eq.session_end&created_at=gte.${daysAgoStr(range)}&duration=not.is.null&limit=50000`),
-        fetch(`${WORKER_URL}/sales`, { method: 'POST', headers: { 'Content-Type': 'application/json' } }).then(r => r.json()).catch(() => ({ sales: [] }))
+        api('/sales', { method: 'POST' }).then(r => r.json()).catch(() => ({ sales: [] }))
       ]);
       const allSales = salesResp.sales || [];
 
@@ -1851,20 +1776,13 @@
   });
 
   async function loadMarketing() {
-    if (!supaUrl || !supaKey) {
-      document.getElementById('email-empty').style.display = '';
-      document.getElementById('dc-empty').style.display = '';
-      return;
-    }
     loadEmails();
     loadDiscountCodes();
   }
 
   async function loadEmails() {
     try {
-      const res = await fetch(`${supaUrl}/rest/v1/emails?select=email,source,discount_code,created_at&order=created_at.desc&limit=500`, {
-        headers: { 'apikey': supaKey, 'Authorization': 'Bearer ' + supaKey }
-      });
+      const res = await api(`/admin/db/emails?select=email,source,discount_code,created_at&order=created_at.desc&limit=500`);
       const emails = await res.json();
       const tbody = document.getElementById('email-tbody');
       const countEl = document.getElementById('email-count');
@@ -1897,7 +1815,7 @@
         const blob = new Blob([csv], { type: 'text/csv' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = `ol-emails-${new Date().toISOString().slice(0, 10)}.csv`;
+        a.download = `harker760-emails-${new Date().toISOString().slice(0, 10)}.csv`;
         a.click();
       };
     } catch (e) {
@@ -1908,9 +1826,7 @@
 
   async function loadDiscountCodes() {
     try {
-      const res = await fetch(`${supaUrl}/rest/v1/discount_codes?select=id,code,type,value,is_active,max_uses,used_count,created_at&is_gift_certificate=is.false&order=created_at.desc`, {
-        headers: { 'apikey': supaKey, 'Authorization': 'Bearer ' + supaKey }
-      });
+      const res = await api(`/admin/db/discount_codes?select=id,code,type,value,is_active,max_uses,used_count,created_at&is_gift_certificate=is.false&order=created_at.desc`);
       const codes = await res.json();
       const listEl = document.getElementById('dc-list');
       const emptyEl = document.getElementById('dc-empty');
@@ -1940,14 +1856,8 @@
           const newActive = btn.dataset.active !== 'true';
           btn.disabled = true;
           try {
-            await fetch(`${supaUrl}/rest/v1/discount_codes?id=eq.${id}`, {
+            await api(`/admin/db/discount_codes?id=eq.${id}`, {
               method: 'PATCH',
-              headers: {
-                'apikey': supaKey,
-                'Authorization': 'Bearer ' + supaKey,
-                'Content-Type': 'application/json',
-                'Prefer': 'return=minimal'
-              },
               body: JSON.stringify({ is_active: newActive })
             });
             btn.dataset.active = String(newActive);
@@ -1979,21 +1889,14 @@
     const maxUses = document.getElementById('dc-max').value ? parseInt(document.getElementById('dc-max').value) : null;
 
     if (!code || !value || value <= 0) { toast('Code and value required'); return; }
-    if (!supaUrl || !supaKey) { toast('Supabase not configured'); return; }
 
     const btn = document.getElementById('dc-create');
     btn.disabled = true;
     btn.textContent = 'Creating...';
 
     try {
-      const res = await fetch(`${supaUrl}/rest/v1/discount_codes`, {
+      const res = await api(`/admin/db/discount_codes`, {
         method: 'POST',
-        headers: {
-          'apikey': supaKey,
-          'Authorization': 'Bearer ' + supaKey,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=minimal'
-        },
         body: JSON.stringify({ code, type, value, max_uses: maxUses })
       });
 
@@ -2018,9 +1921,7 @@
   // --- Gift Certificates ---
   async function loadGiftCertificates() {
     try {
-      const res = await fetch(`${supaUrl}/rest/v1/discount_codes?select=id,code,type,value,is_active,max_uses,used_count,purchaser_name,recipient_name,purchaser_email,created_at&is_gift_certificate=is.true&order=created_at.desc`, {
-        headers: { 'apikey': supaKey, 'Authorization': 'Bearer ' + supaKey }
-      });
+      const res = await api(`/admin/db/discount_codes?select=id,code,type,value,is_active,max_uses,used_count,purchaser_name,recipient_name,purchaser_email,created_at&is_gift_certificate=is.true&order=created_at.desc`);
       const certs = await res.json();
       const listEl = document.getElementById('gc-list');
       const emptyEl = document.getElementById('gc-empty');
@@ -2056,14 +1957,8 @@
         btn.addEventListener('click', async () => {
           btn.disabled = true;
           try {
-            await fetch(`${supaUrl}/rest/v1/discount_codes?id=eq.${btn.dataset.id}`, {
+            await api(`/admin/db/discount_codes?id=eq.${btn.dataset.id}`, {
               method: 'PATCH',
-              headers: {
-                'apikey': supaKey,
-                'Authorization': 'Bearer ' + supaKey,
-                'Content-Type': 'application/json',
-                'Prefer': 'return=minimal'
-              },
               body: JSON.stringify({ is_active: false })
             });
             loadGiftCertificates();
@@ -2086,7 +1981,6 @@
     const email = document.getElementById('gc-email').value.trim();
 
     if (!amount || amount <= 0) { toast('Amount required'); return; }
-    if (!supaUrl || !supaKey) { toast('Supabase not configured'); return; }
 
     // Generate GIFT-XXXX-XXXX code
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -2111,14 +2005,8 @@
       if (recipient) body.recipient_name = recipient;
       if (email) body.purchaser_email = email;
 
-      const res = await fetch(`${supaUrl}/rest/v1/discount_codes`, {
+      const res = await api(`/admin/db/discount_codes`, {
         method: 'POST',
-        headers: {
-          'apikey': supaKey,
-          'Authorization': 'Bearer ' + supaKey,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=minimal'
-        },
         body: JSON.stringify(body)
       });
 
@@ -2130,11 +2018,11 @@
       // Send email with gift code if email provided
       if (email) {
         try {
-          await fetch('https://h760-checkout.objectlesson.workers.dev/send-gift-email', {
+          const emailRes = await api('/send-gift-email', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ code, amount, email, purchaserName: purchaser, recipientName: recipient })
           });
+          if (!emailRes.ok) throw new Error('email failed');
           toast(`Gift certificate created & emailed: ${code}`);
         } catch {
           toast(`Gift certificate created: ${code} (email failed)`);
@@ -2185,10 +2073,7 @@
     loading.style.display = '';
 
     try {
-      const resp = await fetch(`${WORKER_URL}/sales`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-      });
+      const resp = await api('/sales', { method: 'POST' });
       const data = await resp.json();
       if (!resp.ok) throw new Error(data.error || 'Failed to load sales');
 
