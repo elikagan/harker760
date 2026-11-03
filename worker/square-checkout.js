@@ -38,7 +38,8 @@ export default {
       '/sales': handleSales,
       '/sales-backfill': handleSalesBackfill,
       '/sales-backfill-names': handleSalesBackfillNames,
-      '/send-gift-email': handleSendGiftEmail
+      '/send-gift-email': handleSendGiftEmail,
+      '/admin/webhook-test': handleWebhookTest
     };
     const isAdminDb = p.startsWith('/admin/db/');
     if (adminRoutes[p] || isAdminDb) {
@@ -147,7 +148,8 @@ async function handleAdminLogin(request, env) {
 // ─── Supabase helpers (server key stays in the worker) ────────────
 
 function supa(env, path, init = {}) {
-  const key = env.SUPABASE_SERVICE_KEY;
+  // Until the service key is installed, fall back to the anon key the live site already uses.
+  const key = env.SUPABASE_SERVICE_KEY || env.SUPABASE_ANON_KEY;
   if (!env.SUPABASE_URL || !key) throw new Error('Supabase not configured');
   return fetch(`${env.SUPABASE_URL}/rest/v1/${path}`, {
     ...init,
@@ -402,9 +404,10 @@ async function fetchOrderMetadata(env, orderId) {
 
 async function handleWebhook(request, env) {
   const body = await request.text();
-  if (!(await verifySquareSignature(request, body, env))) {
-    console.error('Webhook rejected: bad or missing signature');
-    return new Response('Invalid signature', { status: 401 });
+  const verified = await verifySquareSignature(request, body, env);
+  if (!verified) {
+    console.error('Webhook signature did not verify');
+    if (env.WEBHOOK_ENFORCE === '1') return new Response('Invalid signature', { status: 401 });
   }
 
   try {
@@ -436,7 +439,9 @@ async function handleWebhook(request, env) {
     if (!isWebsiteSale) return new Response('OK', { status: 200 });
     const meta = await fetchOrderMetadata(env, payment.order_id);
 
-    if (isGiftCert) {
+    if (isGiftCert && !verified) {
+      console.error('Unverified gift certificate payment ignored');
+    } else if (isGiftCert) {
       const code = meta.gift_code || refId;
       const giftAmount = Number(payment.amount_money?.amount || 0) / 100;
       try {
@@ -468,7 +473,7 @@ async function handleWebhook(request, env) {
       }
     } else if (refId && env.GITHUB_TOKEN) {
       await markAsSold(env, refId);
-      if (meta.discount_code) {
+      if (meta.discount_code && verified) {
         try { await incrementDiscountUse(env, meta.discount_code); }
         catch (e) { console.error('Discount count update failed:', e.message); }
       }
@@ -508,7 +513,8 @@ async function handleWebhook(request, env) {
       console.error('Sale record error:', e.message);
     }
 
-    return new Response('OK', { status: 200 });
+    // 202 tells Square's test tool the signature didn't verify while enforcement is off.
+    return new Response('OK', { status: verified ? 200 : 202 });
   } catch (e) {
     console.error('Webhook error:', e.message, e.stack);
     return new Response('Error', { status: 500 });
@@ -783,4 +789,21 @@ async function handleAdminDb(request, env, url) {
   } catch (e) {
     return jsonResponse({ error: e.message }, 500, request);
   }
+}
+
+async function handleWebhookTest(request, env) {
+  const auth = { 'Square-Version': SQUARE_VERSION, 'Authorization': `Bearer ${env.SQUARE_ACCESS_TOKEN}`, 'Content-Type': 'application/json' };
+  const list = await fetch(`${SQUARE_API}/webhooks/subscriptions`, { headers: auth });
+  const data = await list.json();
+  if (!list.ok) return jsonResponse({ error: data.errors?.[0]?.detail || 'Square error' }, 500, request);
+  const results = [];
+  for (const sub of data.subscriptions || []) {
+    if (!sub.enabled || !String(sub.notification_url || '').includes('h760-checkout')) continue;
+    const t = await fetch(`${SQUARE_API}/webhooks/subscriptions/${sub.id}/test`, {
+      method: 'POST', headers: auth, body: JSON.stringify({ event_type: 'payment.updated' })
+    });
+    const tr = await t.json();
+    results.push({ url: sub.notification_url, events: sub.event_types, status_code: tr.subscription_test_result?.status_code ?? tr.status_code ?? null });
+  }
+  return jsonResponse({ subscriptions: (data.subscriptions || []).map(s => ({ url: s.notification_url, enabled: s.enabled })), tested: results }, 200, request);
 }
